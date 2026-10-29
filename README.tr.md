@@ -2,6 +2,9 @@
 
 🇬🇧 [English version](README.md)
 
+İndirmeden Kullanmak için:
+https://goblinhanyikan.github.io/3dNfcVinylMaker/
+
 Herhangi bir görseli, 3B yazıcıyla basılabilecek çok renkli bir bardak altlığı için STL dosyalarına dönüştüren, tarayıcı tabanlı bir araçtır. Altlık Ø100 mm × 3 mm boyutundadır; siyah bir kenarı, her iki yüzünde sizin görseliniz ve baskıyı duraklatarak NFC etiketi yerleştirebileceğiniz kapalı bir iç boşluğu vardır.
 
 Her şey tarayıcınızda yerel olarak çalışır. Görseliniz hiçbir yere yüklenmez.

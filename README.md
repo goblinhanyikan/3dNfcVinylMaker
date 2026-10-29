@@ -2,6 +2,9 @@
 
 🇹🇷 [Türkçe sürüm](README.tr.md)
 
+To use without downloading:
+https://goblinhanyikan.github.io/3dNfcVinylMaker/
+
 A browser-based tool that turns any image into a set of multicolor STL files for a 3D-printed coaster. The coaster is Ø100 mm × 3 mm with a black rim, your image on both faces, and a sealed internal cavity where you can embed an NFC tag by pausing the print.
 
 Everything runs locally in your browser. Your image is never uploaded.

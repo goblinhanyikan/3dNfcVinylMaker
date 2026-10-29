@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vinyl Coaster Maker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:wght@400;700&family=Orbitron:wght@400;700&family=Cinzel:wght@400;700&family=Permanent+Marker&display=swap">
+<style>
+:root{--bg:#f5f3fa;--card:#fff;--tx:#1d1a24;--mu:#6c6779;--bd:#dcd7e8;--ac:#6d3fc4;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141218;--card:#201d27;--tx:#ece9f3;--mu:#a39eb3;--bd:#383344;--ac:#8b5cf6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141218;--card:#201d27;--tx:#ece9f3;--mu:#a39eb3;--bd:#383344;--ac:#8b5cf6;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px}p.s{margin:0 0 18px;color:var(--mu)}
+.g{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px}
+@media(max-width:720px){.g{grid-template-columns:1fr}}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}
+label{display:flex;justify-content:space-between;font-size:13px;color:var(--mu);margin:12px 0 2px}
+label b{color:var(--tx);font-weight:600}
+input[type=range]{width:100%;accent-color:var(--ac)}
+input[type=number]{width:70px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:3px 6px}
+input[type=file]{width:100%;color:var(--tx)}
+select,input[type=text]{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:4px 6px;font:inherit;max-width:60%}
+input[type=text]{width:100%;max-width:100%;margin-top:6px}
+input[type=color]{width:44px;height:26px;border:1px solid var(--bd);border-radius:6px;background:none;padding:0}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer;width:100%}
+button:disabled{opacity:.5}
+.lg{width:auto;padding:5px 12px;font-size:13px;background:transparent;color:var(--ac);border:1px solid var(--ac)}
+canvas{touch-action:none;cursor:grab;width:100%;max-width:480px;display:block;margin:0 auto;border-radius:50%;background:repeating-conic-gradient(var(--bd) 0 25%,transparent 0 50%) 0 0/16px 16px}
+.sw{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.sw span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mu)}
+.sw i{width:18px;height:18px;border-radius:4px;border:1px solid var(--bd)}
+#st{font-size:13px;color:var(--mu);margin:8px 0 12px;min-height:20px}
+ol{margin:12px 0 0;padding-left:18px;color:var(--mu);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h1>Vinyl Coaster Maker</h1><button class="lg" id="lg" type="button">TR</button></div>
+<p class="s">Upload an image, get print-ready multicolor STL files. Coaster Ø100 × 3 mm, black rim, sealed NFC cavity (pause the print and insert the tag), image on both faces.</p>
+<div class="g">
+<div class="c">
+<input type="file" id="f" accept="image/*">
+<label>Zoom <b id="zv">1.0×</b></label><input type="range" id="zoom" min="1" max="8" step="0.05" value="1">
+<label>Shift left / right</label><input type="range" id="ox" min="-1" max="1" step="0.05" value="0">
+<label>Shift up / down</label><input type="range" id="oy" min="-1" max="1" step="0.05" value="0">
+<label>Colors <b id="kv">4</b></label><input type="range" id="k" min="2" max="8" step="1" value="4">
+<label>Resolution (px across image) <b id="nv">400</b></label><input type="range" id="n" min="200" max="600" step="50" value="400">
+<label>Speckle cleanup <b id="sv">1</b></label><input type="range" id="sm" min="0" max="3" step="1" value="1">
+<label>Image diameter (mm) <input type="number" id="D" value="80" min="40" max="96"></label>
+<label>NFC cavity diameter (mm) <input type="number" id="H" value="25" min="5" max="60"></label>
+<label>Cavity height (mm) <input type="number" id="CH" value="1" min="0.4" max="1.4" step="0.1"></label>
+<label>Image layer thickness (mm) <input type="number" id="L" value="0.6" min="0.2" max="1.2" step="0.1"></label>
+<label style="margin-top:18px"><span><input type="checkbox" id="tOn"> <b>Add text around the rim</b></span></label>
+<div id="tBox" style="display:none">
+<input type="text" id="txt" value="MY COASTER" maxlength="60">
+<label>Font <select id="tFont"><option>Arial</option><option>Georgia</option><option>Courier New</option><option>Impact</option><option>Trebuchet MS</option><option>Bebas Neue</option><option>Oswald</option><option>Pacifico</option><option>Playfair Display</option><option>Orbitron</option><option>Cinzel</option><option>Permanent Marker</option></select></label>
+<div style="margin-top:8px;font-size:13px;color:var(--mu)">Or upload a font file (.ttf, .otf, .woff)<input type="file" id="ff" accept=".ttf,.otf,.woff,.woff2"></div>
+<label>Text color <input type="color" id="tColor" value="#ffffff"></label>
+<label>Size <b id="tzv">5.5 mm</b></label><input type="range" id="tSize" min="3" max="7" step="0.5" value="5.5">
+<label>Layout <select id="tMode"><option value="top">Centered at top</option><option value="ring">Spread around full ring</option><option value="rep">Repeat around ring</option></select></label>
+<label>Letter spacing (top layout) <b id="tsv">0.5 mm</b></label><input type="range" id="tSp" min="0" max="3" step="0.1" value="0.5">
+<label>Text on <select id="tFace"><option value="both">Both faces</option><option value="top">Top only</option><option value="bot">Bottom only</option></select></label>
+<label><span><input type="checkbox" id="tBold" checked> Bold</span></label>
+</div>
+</div>
+<div class="c">
+<canvas id="cv" width="480" height="480"></canvas>
+<div class="s" style="text-align:center;margin:8px 0 0;font-size:13px">Scroll or pinch to zoom, drag to move the image.</div>
+<div class="sw" id="sw"></div>
+<div id="st"></div>
+<button id="dl">Download STL set (.zip)</button>
+<ol>
+<li>Import all STLs into the slicer together, keep their positions, and assign one filament per file.</li>
+<li><b>base_black</b> is the black body and rim, with the sealed cavity inside. Each <b>color_*</b> file holds that color on both faces.</li>
+<li>The underside is mirrored so it reads correctly when the coaster is flipped like a page.</li>
+<li>Schedule a pause at the Z height shown above, which is the top of the cavity and just before the ceiling prints. Drop the tag in flat, then resume. The ceiling bridges the cavity, so no supports are needed.</li>
+<li>With text on, it is inlaid into the rim: <b>text_*.stl</b> is the text color and sits in the same layers as the black rim, so it needs its own filament.</li>
+</ol>
+</div>
+</div>
+</main>
+<script>
+const $=id=>document.getElementById(id),OD=100,T=3;
+const TR={'Vinyl Coaster Maker':'Vinil Bardak Altlığı Oluşturucu',
+'Upload an image, get print-ready multicolor STL files. Coaster Ø100 × 3 mm, black rim, sealed NFC cavity (pause the print and insert the tag), image on both faces.':'Bir görsel yükleyin, baskıya hazır çok renkli STL dosyaları alın. Ø100 × 3 mm altlık, siyah kenar, kapalı NFC boşluğu (baskıyı duraklatıp etiketi yerleştirin), her iki yüzde görsel.',
+'Zoom':'Yakınlaştırma','Scroll or pinch to zoom, drag to move the image.':'Yakınlaştırmak için kaydırın veya iki parmakla sıkıştırın, görseli taşımak için sürükleyin.','Shift left / right':'Sola / sağa kaydır','Shift up / down':'Yukarı / aşağı kaydır','Colors':'Renk sayısı','Resolution (px across image)':'Çözünürlük (görsel boyunca piksel)','Speckle cleanup':'Benek temizleme',
+'Image diameter (mm)':'Görsel çapı (mm)','NFC cavity diameter (mm)':'NFC boşluğu çapı (mm)','Cavity height (mm)':'Boşluk yüksekliği (mm)','Image layer thickness (mm)':'Görsel katman kalınlığı (mm)',
+'Add text around the rim':'Kenar boyunca yazı ekle','Font':'Yazı tipi','Or upload a font file (.ttf, .otf, .woff)':'Veya bir yazı tipi dosyası yükleyin (.ttf, .otf, .woff)','Text color':'Yazı rengi','Size':'Boyut','Layout':'Yerleşim',
+'Centered at top':'Üstte ortalı','Spread around full ring':'Tüm halkaya yay','Repeat around ring':'Halka boyunca tekrarla','Letter spacing (top layout)':'Harf aralığı (üstte ortalı yerleşim)',
+'Text on':'Yazı yüzü','Both faces':'İki yüz','Top only':'Sadece üst','Bottom only':'Sadece alt','Bold':'Kalın','Download STL set (.zip)':'STL setini indir (.zip)',
+'Import all STLs into the slicer together, keep their positions, and assign one filament per file.':'Tüm STL dosyalarını dilimleyiciye birlikte aktarın, konumlarını değiştirmeyin ve her dosyaya ayrı bir filament atayın.',
+'is the black body and rim, with the sealed cavity inside. Each':'siyah gövde ve kenardır, içinde kapalı boşluk bulunur. Her',
+'file holds that color on both faces.':'dosyası o rengi her iki yüzde içerir.',
+'The underside is mirrored so it reads correctly when the coaster is flipped like a page.':'Alt yüz aynalanmıştır; altlık bir sayfa gibi çevrildiğinde doğru okunur.',
+'Schedule a pause at the Z height shown above, which is the top of the cavity and just before the ceiling prints. Drop the tag in flat, then resume. The ceiling bridges the cavity, so no supports are needed.':'Yukarıda gösterilen Z yüksekliğinde, yani boşluğun üstünde ve tavan basdırılmadan hemen önce baskıyı duraklatın. Etiketi düz şekilde bırakıp devam edin. Tavan boşluğu köprüler, destek gerekmez.',
+'With text on, it is inlaid into the rim:':'Yazı açıkken kenara gömülür:',
+'is the text color and sits in the same layers as the black rim, so it needs its own filament.':'yazı rengidir ve siyah kenarla aynı katmanlarda yer alır, bu yüzden kendi filamentine ihtiyaç duyar.'};
+let lang=(()=>{try{const s=localStorage.getItem('lang');if(s)return s}catch(e){}return(navigator.language||'').toLowerCase().startsWith('tr')?'tr':'en'})();
+const L=(e,t)=>lang=='tr'?t:e,orig=new WeakMap();
+function tr(){document.documentElement.lang=lang;document.title=lang=='tr'?TR['Vinyl Coaster Maker']:'Vinyl Coaster Maker';
+const w=document.createTreeWalker(document.querySelector('main'),NodeFilter.SHOW_TEXT);let n;
+while(n=w.nextNode()){const raw=orig.has(n)?orig.get(n):n.nodeValue,k=raw.trim();if(!TR[k])continue;orig.set(n,raw);n.nodeValue=lang=='tr'?raw.replace(k,()=>TR[k]):raw}
+$('lg').textContent=lang=='tr'?'EN':'TR'}
+let img=null,res=null,tm;
+function sample(){const c=document.createElement('canvas');c.width=c.height=400;const x=c.getContext('2d');
+x.fillStyle='#1b2a49';x.fillRect(0,0,400,400);x.fillStyle='#f2b134';x.beginPath();x.arc(200,230,120,0,7);x.fill();
+x.fillStyle='#e4572e';x.fillRect(0,240,400,160);x.fillStyle='#f6f1e7';x.beginPath();x.arc(200,230,50,0,7);x.fill();img=c}
+function P(){const g=i=>+$(i).value;const D=Math.min(96,Math.max(40,g('D')));return{z:g('zoom'),ox:g('ox'),oy:g('oy'),k:g('k'),N:g('n'),sm:g('sm'),D,H:Math.min(g('H'),D-10),CH:Math.max(.2,Math.min(g('CH'),T-2*g('L')-.4)),L:g('L'),t:{on:$('tOn').checked&&OD/2-D/2>=4,txt:$('txt').value,font:$('tFont').value,size:g('tSize'),color:$('tColor').value,mode:$('tMode').value,sp:g('tSp'),face:$('tFace').value,bold:$('tBold').checked}}}
+function quant(d,valid,k){let seed=12345;const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+const st=Math.max(1,Math.floor(valid.length/15000)),S=[];for(let i=0;i<valid.length;i+=st){const p=valid[i]*4;S.push([d[p],d[p+1],d[p+2]])}
+const ds=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;let C=[S[Math.floor(rnd()*S.length)]];
+while(C.length<k){const D=S.map(s=>Math.min(...C.map(c=>ds(s,c))));let r=rnd()*D.reduce((a,b)=>a+b,0),j=0;for(;j<D.length-1&&(r-=D[j])>0;j++);C.push(S[j])}
+for(let it=0;it<10;it++){const A=C.map(()=>[0,0,0,0]);for(const s of S){let b=0,bd=1e12;C.forEach((c,i)=>{const e=ds(s,c);if(e<bd){bd=e;b=i}});const a=A[b];a[0]+=s[0];a[1]+=s[1];a[2]+=s[2];a[3]++}
+C=C.map((c,i)=>A[i][3]?[A[i][0]/A[i][3],A[i][1]/A[i][3],A[i][2]/A[i][3]]:c)}return C}
+function run(){const p=P(),N=p.N,s=p.D/N,w=img.width,h=img.height,side=Math.min(w,h)/p.z;
+const c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d',{willReadFrequently:true});x.fillStyle='#000';x.fillRect(0,0,N,N);
+x.drawImage(img,(w-side)*(.5+p.ox/2),(h-side)*(.5+p.oy/2),side,side,0,0,N,N);
+const d=x.getImageData(0,0,N,N).data,lab=new Int8Array(N*N).fill(-1),valid=[];
+for(let j=0;j<N;j++)for(let i=0;i<N;i++){const r=Math.hypot(i+.5-N/2,j+.5-N/2)*s;if(r<=p.D/2-.71*s)valid.push(j*N+i)}
+const V=Int32Array.from(valid),C=quant(d,V,p.k);
+for(const i of V){const q=i*4;let b=0,bd=1e12;C.forEach((cc,n)=>{const e=(d[q]-cc[0])**2+(d[q+1]-cc[1])**2+(d[q+2]-cc[2])**2;if(e<bd){bd=e;b=n}});lab[i]=b}
+for(let pass=0;pass<p.sm;pass++){const o=lab.slice();for(const i of V){const cx=i%N,cy=(i/N)|0,cnt=new Uint8Array(p.k);
+for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=cx+dx,yy=cy+dy;if(xx>=0&&yy>=0&&xx<N&&yy<N){const v=o[yy*N+xx];if(v>=0)cnt[v]++}}
+let b=o[i],m=Math.max(cnt[b],4);cnt.forEach((q,n)=>{if(q>m){m=q;b=n}});lab[i]=b}}
+const hex=C.map(c=>c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join(''));
+const oc=document.createElement('canvas');oc.width=oc.height=N;const ox=oc.getContext('2d'),id=ox.createImageData(N,N);
+for(const i of V){const cc=C[lab[i]];id.data.set([cc[0],cc[1],cc[2],255],i*4)}ox.putImageData(id,0,0);
+const cnt=new Array(p.k).fill(0);V.forEach(i=>cnt[lab[i]]++);
+res={lab,N,hex,cv:oc,p,cnt,tot:V.length};res.tx=p.t.on?buildText(p):null;draw();
+const sw=$('sw');sw.textContent='';hex.forEach((hx,i)=>{if(!cnt[i])return;const e=document.createElement('span'),b=document.createElement('i');b.style.background='#'+hx;e.append(b,'#'+hx+' · '+Math.round(100*cnt[i]/V.length)+'%');sw.append(e)});
+$('st').textContent=L('Ready. Pixel size ','Hazır. Piksel boyutu ')+s.toFixed(2)+L(' mm. Pause the print at Z = ',' mm. Etiketi yerleştirmek için baskıyı Z = ')+((T+p.CH)/2).toFixed(2)+L(' mm to insert the tag.',' mm yüksekliğinde duraklatın.')}
+const TW=1000;
+function buildText(p){const t=p.t,c=document.createElement('canvas');c.width=c.height=TW;const x=c.getContext('2d',{willReadFrequently:true}),q=TW/OD,b0=p.D/2+.8,b1=OD/2-.8,rb=((b0+b1)/2-.35*t.size)*q;
+x.font=(t.bold?'700 ':'400 ')+t.size*q+'px "'+t.font+'",sans-serif';x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle=t.color;
+const u=[...t.txt.trim()];if(!u.length)return null;const m=ch=>x.measureText(ch).width,circ=2*Math.PI*rb;
+let chars=u,n=1,sp=t.sp*q;
+if(t.mode!='top'){const sep=t.mode=='rep'?[' ',' ','•',' ',' ']:[' ',' '];chars=u.concat(sep);const Wd=chars.reduce((a,ch)=>a+m(ch),0);n=t.mode=='rep'?Math.max(1,Math.floor(circ/Wd)):1;sp=Math.max(0,(circ-n*Wd)/(n*chars.length))}
+const adv=chars.map(ch=>m(ch)+sp),unit=adv.reduce((a,b)=>a+b,0),span=adv.slice(0,u.length).reduce((a,b)=>a+b,0)-sp;
+for(let k=0;k<n;k++){let pos=k*unit-span/2;chars.forEach((ch,i)=>{const th=(pos+(adv[i]-sp)/2)/rb;pos+=adv[i];if(ch==' ')return;x.save();x.translate(TW/2,TW/2);x.rotate(th);x.translate(0,-rb);x.fillText(ch,0,0);x.restore()})}
+const d=x.getImageData(0,0,TW,TW).data,lab=new Int8Array(TW*TW).fill(-1),s2=OD/TW;let cntT=0;
+for(let j=0;j<TW;j++)for(let i=0;i<TW;i++){const r=Math.hypot(i+.5-TW/2,j+.5-TW/2)*s2;if(r>=b0+.07&&r<=b1-.07){const on=d[(j*TW+i)*4+3]>127;lab[j*TW+i]=on?1:0;if(on)cntT++}}
+return{c,lab,cntT,b0,b1}}
+function addB(w,list,s,h,z0,z1,mir){for(const[k,y0,y1]of list){const[a,e]=k.split(',').map(Number),xa=a*s-h,xb=e*s-h,yb=h-y0*s,ya=h-y1*s;mir?w.box(-xb,-xa,ya,yb,z0,z1):w.box(xa,xb,ya,yb,z0,z1)}}
+function draw(){const c=$('cv'),x=c.getContext('2d'),q=c.width/OD,p=res.p;x.clearRect(0,0,c.width,c.height);
+x.fillStyle='#111';x.beginPath();x.arc(c.width/2,c.width/2,c.width/2,0,7);x.fill();
+x.imageSmoothingEnabled=false;x.drawImage(res.cv,(OD-p.D)/2*q,(OD-p.D)/2*q,p.D*q,p.D*q);
+if(res.tx){const o=c.width/2;x.save();x.beginPath();x.arc(o,o,res.tx.b1*q,0,7);x.moveTo(o+res.tx.b0*q,o);x.arc(o,o,res.tx.b0*q,0,7,true);x.clip();x.imageSmoothingEnabled=true;x.drawImage(res.tx.c,0,0,c.width,c.width);x.restore()}
+x.beginPath();x.arc(c.width/2,c.width/2,p.H/2*q,0,7);x.lineWidth=4;x.strokeStyle='rgba(0,0,0,.5)';x.stroke();x.setLineDash([6,5]);x.lineWidth=2;x.strokeStyle='#fff';x.stroke();x.setLineDash([])}
+function W(){let a=new Float32Array(1<<16),n=0;
+const tri=(p,q,r)=>{if(n+12>a.length){const b=new Float32Array(a.length*2);b.set(a);a=b}
+const ux=q[0]-p[0],uy=q[1]-p[1],uz=q[2]-p[2],vx=r[0]-p[0],vy=r[1]-p[1],vz=r[2]-p[2];
+const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,l=Math.hypot(nx,ny,nz)||1;a.set([nx/l,ny/l,nz/l,...p,...q,...r],n);n+=12};
+const quad=(A,B,C,D)=>{tri(A,B,C);tri(A,C,D)},V=(x,y,z)=>[x,y,z];
+return{box(x0,x1,y0,y1,z0,z1){quad(V(x0,y0,z0),V(x0,y1,z0),V(x1,y1,z0),V(x1,y0,z0));quad(V(x0,y0,z1),V(x1,y0,z1),V(x1,y1,z1),V(x0,y1,z1));
+quad(V(x0,y0,z0),V(x1,y0,z0),V(x1,y0,z1),V(x0,y0,z1));quad(V(x0,y1,z0),V(x0,y1,z1),V(x1,y1,z1),V(x1,y1,z0));
+quad(V(x0,y0,z0),V(x0,y0,z1),V(x0,y1,z1),V(x0,y1,z0));quad(V(x1,y0,z0),V(x1,y1,z0),V(x1,y1,z1),V(x1,y0,z1))},
+disc(r,z0,z1,m=180){const p=(t,z)=>[r*Math.cos(t),r*Math.sin(t),z];for(let i=0;i<m;i++){const t0=i/m*6.283185307,t1=(i+1)/m*6.283185307;tri([0,0,z1],p(t0,z1),p(t1,z1));tri([0,0,z0],p(t1,z0),p(t0,z0));quad(p(t0,z0),p(t1,z0),p(t1,z1),p(t0,z1))}},
+ring(r0,r1,z0,z1,m=180){const p=(r,t,z)=>[r*Math.cos(t),r*Math.sin(t),z];for(let i=0;i<m;i++){const t0=i/m*6.283185307,t1=(i+1)/m*6.283185307;
+quad(p(r1,t0,z0),p(r1,t1,z0),p(r1,t1,z1),p(r1,t0,z1));quad(p(r0,t0,z0),p(r0,t0,z1),p(r0,t1,z1),p(r0,t1,z0));
+quad(p(r0,t0,z1),p(r1,t0,z1),p(r1,t1,z1),p(r0,t1,z1));quad(p(r0,t0,z0),p(r0,t1,z0),p(r1,t1,z0),p(r1,t0,z0))}},
+stl(){const c=n/12,u=new Uint8Array(84+50*c),dv=new DataView(u.buffer);dv.setUint32(80,c,true);
+for(let t=0;t<c;t++){const o=84+50*t;for(let k=0;k<12;k++)dv.setFloat32(o+4*k,a[t*12+k],true)}return u}}}
+function boxes(lab,N,c){const act=new Map(),out=[];for(let y=0;y<=N;y++){const runs=new Set();
+if(y<N){let x=0;while(x<N){if(lab[y*N+x]==c){const x0=x;while(x<N&&lab[y*N+x]==c)x++;runs.add(x0+','+x)}else x++}}
+for(const[k,y0]of act)if(!runs.has(k)){out.push([k,y0,y]);act.delete(k)}for(const k of runs)if(!act.has(k))act.set(k,y)}return out}
+const crcT=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc=u=>{let c=-1;for(let i=0;i<u.length;i++)c=crcT[(c^u[i])&255]^(c>>>8);return(~c)>>>0};
+function zip(fs){const enc=new TextEncoder(),parts=[],cen=[];let off=0;
+for(const f of fs){const nm=enc.encode(f.name),c=crc(f.data),L=f.data.length,h=new DataView(new ArrayBuffer(30));
+h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint32(14,c,true);h.setUint32(18,L,true);h.setUint32(22,L,true);h.setUint16(26,nm.length,true);parts.push(new Uint8Array(h.buffer),nm,f.data);
+const d=new DataView(new ArrayBuffer(46));d.setUint32(0,0x02014b50,true);d.setUint16(4,20,true);d.setUint16(6,20,true);d.setUint32(16,c,true);d.setUint32(20,L,true);d.setUint32(24,L,true);d.setUint16(28,nm.length,true);d.setUint32(42,off,true);
+cen.push(new Uint8Array(d.buffer),nm);off+=30+nm.length+L}
+let cs=0;cen.forEach(x=>cs+=x.length);const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,fs.length,true);e.setUint16(10,fs.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+return new Blob([...parts,...cen,new Uint8Array(e.buffer)],{type:'application/zip'})}
+async function exportZip(){const{lab,N,hex,p,cnt}=res,s=p.D/N,L=p.L,R=OD/2,files=[];
+const b=W();const zb=(T-p.CH)/2,zt=zb+p.CH;b.disc(R,L,zb);b.ring(p.H/2,R,zb,zt);b.disc(R,zt,T-L);const tx=res.tx,s2=OD/TW,bk=tx&&boxes(tx.lab,TW,0),tk=tx&&boxes(tx.lab,TW,1),tw=W();
+for(const[z0,z1,on,mir]of[[0,L,tx&&p.t.face!='top',true],[T-L,T,tx&&p.t.face!='bot',false]]){
+if(on){b.ring(p.D/2,tx.b0,z0,z1);b.ring(tx.b1,R,z0,z1);addB(b,bk,s2,OD/2,z0,z1,mir);addB(tw,tk,s2,OD/2,z0,z1,mir)}else b.ring(p.D/2,R,z0,z1)}
+files.push({name:'base_black.stl',data:b.stl()});
+let nb=0;for(let c=0;c<p.k;c++){if(!cnt[c])continue;const w=W();
+for(const[k,y0,y1]of boxes(lab,N,c)){const[a,e]=k.split(',').map(Number),xa=a*s-p.D/2,xb=e*s-p.D/2,yb=p.D/2-y0*s,ya=p.D/2-y1*s;nb++;
+w.box(xa,xb,ya,yb,T-L,T);w.box(-xb,-xa,ya,yb,0,L)}
+files.push({name:'color'+(files.length)+'_'+hex[c]+'.stl',data:w.stl()})}
+if(tx&&tx.cntT)files.push({name:'text_'+p.t.color.slice(1)+'.stl',data:tw.stl()});
+const blob=zip(files),dl=window.claude?await claude.use('downloads'):null;
+if(dl){try{await dl.save({filename:'vinyl_coaster_stl.zip',data:blob});$('st').textContent=L('Saved '+files.length+' STL files (','Kaydedildi: '+files.length+' STL dosyası (')+(blob.size/1048576).toFixed(1)+' MB).'}catch(e){$('st').textContent=e&&e.code=='declined'?L('Download cancelled.','İndirme iptal edildi.'):L('Download unavailable here.','Bu ortamda indirme kullanılamıyor.')}}
+else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vinyl_coaster_stl.zip';a.click();$('st').textContent=L('Exported '+files.length+' STL files.',files.length+' STL dosyası dışa aktarıldı.')}}
+function go(){$('st').textContent=L('Processing…','İşleniyor…');clearTimeout(tm);tm=setTimeout(async()=>{try{if($('tOn').checked)await document.fonts.load(($('tBold').checked?'700 ':'400 ')+'20px "'+$('tFont').value+'"',$('txt').value).catch(()=>{});run()}catch(e){$('st').textContent='Error: '+e.message}},120)}
+['zoom','ox','oy','k','n','sm','D','H','CH','L','tOn','txt','tFont','tSize','tColor','tMode','tSp','tFace','tBold'].forEach(i=>$(i).addEventListener('input',()=>{$('tBox').style.display=$('tOn').checked?'block':'none';$('tzv').textContent=$('tSize').value+' mm';$('tsv').textContent=$('tSp').value+' mm';$('zv').textContent=(+$('zoom').value).toFixed(1)+'×';$('kv').textContent=$('k').value;$('nv').textContent=$('n').value;$('sv').textContent=$('sm').value;go()}));
+$('f').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;go()};i.src=URL.createObjectURL(f)});
+$('dl').addEventListener('click',async()=>{$('dl').disabled=true;$('st').textContent=L('Building STL files…','STL dosyaları oluşturuluyor…');await new Promise(r=>setTimeout(r,30));try{await exportZip()}catch(e){$('st').textContent='Error: '+e.message}$('dl').disabled=false});
+$('ff').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const ff=new FontFace('CustomFont',await f.arrayBuffer());await ff.load();document.fonts.add(ff);let o=[...$('tFont').options].find(x=>x.value=='CustomFont');if(!o){o=new Option('Uploaded font','CustomFont');$('tFont').add(o)}$('tFont').value='CustomFont';$('tOn').checked=true;$('tBox').style.display='block';go()}catch(err){$('st').textContent=L('Could not load that font file.','Yazı tipi dosyası yüklenemedi.')}});
+(()=>{const cv=$('cv'),ps=new Map();
+const setZ=z=>{const e=$('zoom');e.value=Math.min(+e.max,Math.max(+e.min,z));$('zv').textContent=(+e.value).toFixed(1)+'×';go()};
+const pan=(dx,dy)=>{const r=cv.getBoundingClientRect(),p=P(),w=img.width,h=img.height,side=Math.min(w,h)/p.z,k=OD/r.width/p.D*side;
+for(const[a,id,sz]of[[dx,'ox',w],[dy,'oy',h]]){const rg=(sz-side)/2;if(rg>1e-6){const e=$(id);e.value=Math.min(1,Math.max(-1,+e.value-a*k/rg))}}go()};
+cv.addEventListener('wheel',e=>{e.preventDefault();setZ(+$('zoom').value*Math.exp(-e.deltaY*.0015))},{passive:false});
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ps.set(e.pointerId,[e.clientX,e.clientY])});
+cv.addEventListener('pointermove',e=>{const o=ps.get(e.pointerId);if(!o||!img)return;
+if(ps.size==2){const[a,b]=[...ps.values()],d0=Math.hypot(a[0]-b[0],a[1]-b[1]);ps.set(e.pointerId,[e.clientX,e.clientY]);const[c,d]=[...ps.values()],d1=Math.hypot(c[0]-d[0],c[1]-d[1]);if(d0>0)setZ(+$('zoom').value*d1/d0)}
+else{pan(e.clientX-o[0],e.clientY-o[1]);ps.set(e.pointerId,[e.clientX,e.clientY])}});
+['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,e=>ps.delete(e.pointerId)))})();
+$('lg').onclick=()=>{lang=lang=='tr'?'en':'tr';try{localStorage.setItem('lang',lang)}catch(e){}tr();go()};
+sample();tr();go();
+</script>
+</body>
+</html>

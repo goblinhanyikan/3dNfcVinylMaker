@@ -2,6 +2,8 @@
 
 🇹🇷 [Türkçe sürüm](README.tr.md)
 
+-THIS IS VIBE CODED SLOP, YOU ARE WARNED.-
+
 To use without downloading:
 https://goblinhanyikan.github.io/3dNfcVinylMaker/
 

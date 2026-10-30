@@ -2,6 +2,8 @@
 
 🇬🇧 [English version](README.md)
 
+-BU ÇATIR ÇATIR YAPAY ZEKAYA YAPTIRILMIŞTIR.-
+
 İndirmeden Kullanmak için:
 https://goblinhanyikan.github.io/3dNfcVinylMaker/
 
